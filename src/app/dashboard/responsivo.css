@@ -1,0 +1,117 @@
+/*
+ * Larguras do painel.
+ *
+ * A pagina e desenhada com `style={{}}` inline, que nao aceita media query -
+ * por isso as unicas propriedades que vivem aqui sao as que precisam mudar com
+ * a largura da tela: recuo, corpo do titulo, numero de colunas e espessura das
+ * barras. Todo o resto continua inline, junto do elemento.
+ *
+ * Os valores de desktop sao os mesmos que estavam inline; nada muda acima de
+ * 900px.
+ */
+
+.dash-topo {
+  padding: 34px 48px 30px;
+}
+.dash-corpo {
+  padding: 36px 48px 64px;
+}
+.dash-titulo {
+  font-size: 38px;
+}
+.dash-cartao {
+  padding: 26px 28px 18px;
+}
+.dash-cartao-tabela {
+  padding: 24px 28px 28px;
+}
+.dash-kpi {
+  padding: 22px 20px;
+}
+/* 200px e o piso para o numero caber: "R$ 3.402" a 34px mede ~140px, e a
+   celula ainda gasta 40px de recuo. Com 160px a verba estourava a caixa. */
+.dash-kpis {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+.dash-duo {
+  grid-template-columns: 1.15fr 1fr;
+}
+.dash-topo-lado {
+  text-align: right;
+  align-items: flex-end;
+}
+.dash-topo-acoes {
+  justify-content: flex-end;
+}
+.dash-secao-titulo {
+  flex-wrap: wrap;
+}
+
+/* Duas colunas viram uma antes de os graficos ficarem estreitos demais para o
+   eixo Y caber - as barras deitadas reservam 116px so para os rotulos. */
+@media (max-width: 900px) {
+  .dash-duo {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .dash-topo {
+    padding: 24px 20px 20px;
+  }
+  .dash-corpo {
+    padding: 24px 20px 40px;
+    gap: 24px;
+  }
+  .dash-titulo {
+    font-size: 27px;
+  }
+  .dash-cartao {
+    padding: 20px 18px 14px;
+  }
+  .dash-cartao-tabela {
+    padding: 20px 18px 20px;
+  }
+  .dash-kpi {
+    padding: 16px 18px;
+  }
+
+  /* Um indicador por linha. Duas colunas num celular deixam ~140px uteis por
+     caixa, e o rotulo ("Total de consultas") ja nao cabe numa linha - o numero
+     entao empurra a borda. */
+  .dash-kpis {
+    grid-template-columns: 1fr;
+  }
+
+  /* No celular o bloco da direita do cabecalho passa a ser mais uma linha
+     abaixo do titulo, entao alinhar a direita deixaria os botoes soltos. */
+  .dash-topo-lado {
+    text-align: left;
+    align-items: flex-start;
+  }
+  .dash-topo-acoes {
+    justify-content: flex-start;
+  }
+
+  /* As barras do Chartist tem espessura fixa em px. Com a mesma espessura numa
+     tela estreita elas se encostam e chegam a se sobrepor - as 24 faixas
+     horarias sao o pior caso. O seletor comeca na classe do main so para
+     ganhar do <style> que o ObservatorioCharts injeta no head. */
+  .dash-corpo #ch-horas .ct-bar {
+    stroke-width: 12px;
+  }
+  .dash-corpo #ch-origem .ct-bar {
+    stroke-width: 14px;
+  }
+  .dash-corpo #ch-exp .ct-bar,
+  .dash-corpo #ch-verba .ct-bar,
+  .dash-corpo #ch-comp .ct-bar {
+    stroke-width: 13px;
+  }
+}
+
+@media (max-width: 420px) {
+  .dash-titulo {
+    font-size: 24px;
+  }
+}

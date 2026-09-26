@@ -1,0 +1,17 @@
+Backgrounds da previsao do tempo.
+
+Cada pasta precisa de day.webp e night.webp (28 arquivos no total).
+
+REQUISITOS DA IMAGEM
+  - vertical, proporcao 9:16
+  - SOMENTE CEU
+  - sem cidade, predio, casa, montanha, arvore, pessoa, horizonte,
+    paisagem, texto, icone ou elemento de interface
+
+A imagem fica atras de toda a interface do card, entao qualquer elemento
+reconhecivel na foto briga com o conteudo.
+
+Enquanto um arquivo nao existir, o card desenha a cena ilustrada em SVG.
+
+Os caminhos estao em src/config/weather-backgrounds.ts
+O mapa de codigos esta em src/config/weather-codes.ts

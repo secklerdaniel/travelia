@@ -1,0 +1,13 @@
+Fotos de fundo do card.
+
+Salve aqui e registre o arquivo em src/lib/backgrounds.ts.
+
+A chave pode ser:
+  - o nome da cidade como a OpenWeather devolve, normalizado
+    ("Sao Paulo" -> "sao paulo")
+  - ou o nome de um tema do clima, para valer em qualquer cidade:
+    limpo-dia, limpo-noite, nuvens-dia, nuvens-noite,
+    chuva, garoa, tempestade, neve, neblina
+
+Formato: jpg ou webp, no minimo 1280px de largura.
+Retrato (9:16) funciona melhor que paisagem - o card e alto.

@@ -1,0 +1,714 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: var(--fonte-display), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--fonte-mono), ui-monospace, monospace;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  background:
+    radial-gradient(1100px 620px at 12% -12%, #17253f 0%, transparent 62%),
+    radial-gradient(900px 520px at 92% 2%, #241a3d 0%, transparent 58%),
+    #080b12;
+  color: #e8ecf4;
+  min-height: 100vh;
+  font-family: var(--fonte-sans), ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* =====================================================================
+   Card: camadas de fundo
+   ===================================================================== */
+
+.cartao {
+  box-shadow:
+    0 2px 4px -2px rgba(0, 0, 0, 0.4),
+    0 30px 70px -30px rgba(0, 0, 0, 0.85),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+/* veu escuro na metade de baixo: garante contraste do texto
+   independente de quao claro seja o ceu do tema */
+.veu {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(6, 10, 20, 0.12) 34%,
+    rgba(6, 10, 20, 0.52) 62%,
+    rgba(6, 10, 20, 0.76) 100%
+  );
+}
+
+/* sobre fotografia o veu precisa ser mais forte: a imagem tem detalhe e pontos
+   de luz que competem com o texto, coisa que um gradiente liso nao faz */
+.veu-foto {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(6, 10, 20, 0.16) 0%,
+      rgba(6, 10, 20, 0.1) 28%,
+      rgba(6, 10, 20, 0.54) 60%,
+      rgba(6, 10, 20, 0.82) 100%
+    ),
+    radial-gradient(125% 72% at 50% 6%, transparent 42%, rgba(6, 10, 20, 0.34) 100%);
+}
+
+/* grao sutil: tira o aspecto "gradiente de CSS" e da textura de impressao */
+.grao {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.35;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+}
+
+/* brilho diagonal que atravessa o card no hover */
+.brilho {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    104deg,
+    transparent 38%,
+    rgba(255, 255, 255, 0.13) 48%,
+    transparent 58%
+  );
+  transform: translateX(-100%);
+  transition: transform 1.1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.cartao:hover .brilho {
+  transform: translateX(100%);
+}
+
+/* superficie de vidro dos blocos internos */
+/**
+ * Superficie de vidro jateado.
+ *
+ * O gradiente no fundo (mais claro em cima) simula a luz batendo de cima na
+ * lamina; o `inset` branco no topo e o corte polido da borda superior, e o
+ * escuro embaixo devolve a espessura. Sem esses dois insets o card vira um
+ * retangulo translucido chapado, sem materialidade.
+ *
+ * O `saturate` no backdrop e o que faz a cor do ceu vazar viva atras do vidro
+ * em vez de cinzenta.
+ */
+.vidro {
+  background: linear-gradient(
+    155deg,
+    rgba(255, 255, 255, 0.17) 0%,
+    rgba(255, 255, 255, 0.07) 55%,
+    rgba(255, 255, 255, 0.04) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(22px) saturate(165%);
+  -webkit-backdrop-filter: blur(22px) saturate(165%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.26),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.12),
+    0 10px 30px -18px rgba(0, 0, 0, 0.8);
+}
+
+/* Um fio da cor de destaque do clima na borda de cima: integra o vidro ao
+   tema em vez de deixar toda superficie com o mesmo branco generico. */
+.vidro-tema {
+  border-top-color: color-mix(
+    in srgb,
+    var(--destaque, #ffffff) 45%,
+    rgba(255, 255, 255, 0.16)
+  );
+}
+
+/* =====================================================================
+   Precipitacao e cena
+   ===================================================================== */
+
+.efeito {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.efeito-neve::before,
+.efeito-neve::after {
+  content: "";
+  position: absolute;
+  inset: -50% 0;
+  background-image:
+    radial-gradient(2px 2px at 12% 20%, rgba(255, 255, 255, 0.95), transparent),
+    radial-gradient(2px 2px at 38% 62%, rgba(255, 255, 255, 0.8), transparent),
+    radial-gradient(3px 3px at 63% 30%, rgba(255, 255, 255, 0.9), transparent),
+    radial-gradient(2px 2px at 84% 72%, rgba(255, 255, 255, 0.75), transparent),
+    radial-gradient(2px 2px at 26% 88%, rgba(255, 255, 255, 0.7), transparent);
+  background-size: 210px 210px;
+  animation: nevar 9s linear infinite;
+}
+.efeito-neve::after {
+  animation-duration: 15s;
+  opacity: 0.55;
+  transform: translateX(48px);
+}
+
+.efeito-relampago::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    120% 80% at 60% 0%,
+    rgba(255, 255, 255, 0.85),
+    transparent 70%
+  );
+  opacity: 0;
+  animation: relampago 8s linear infinite;
+}
+
+/* astro e nuvens da cena SVG */
+.astro {
+  transform-origin: 312px 66px;
+  animation: respirar 7s ease-in-out infinite;
+}
+.deriva-lenta {
+  animation: deriva 46s ease-in-out infinite alternate;
+}
+.deriva-media {
+  animation: deriva 32s ease-in-out infinite alternate-reverse;
+}
+.deriva-rapida {
+  animation: deriva 22s ease-in-out infinite alternate;
+}
+.cintilar {
+  animation: cintilar 3.4s ease-in-out infinite;
+}
+
+/* =====================================================================
+   Controles
+   ===================================================================== */
+
+.btn-play {
+  transition:
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.4s ease;
+  box-shadow: 0 6px 20px -8px rgba(0, 0, 0, 0.9);
+}
+.btn-play:hover {
+  transform: scale(1.07);
+}
+.btn-play:active {
+  transform: scale(0.95);
+}
+
+/* barras da waveform pulsam de leve enquanto o audio toca */
+.onda {
+  min-width: 1px;
+  transition:
+    background 0.2s ease,
+    opacity 0.2s ease;
+  animation: pulsar-onda 1.1s ease-in-out infinite;
+}
+
+/* botao com a seta que sai por um lado e volta pelo outro */
+.btn-seta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition:
+    background 0.5s ease-in-out,
+    border-color 0.5s ease-in-out;
+}
+.btn-seta:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.35);
+}
+.btn-seta-ico {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.16);
+  color: var(--destaque, #ffffff);
+}
+.btn-seta-ico svg {
+  position: absolute;
+  transition: transform 0.5s ease-in-out;
+}
+.btn-seta-ico svg:nth-child(2) {
+  transform: translateX(-160%);
+}
+.btn-seta:hover .btn-seta-ico svg:nth-child(1) {
+  transform: translateX(160%);
+}
+.btn-seta:hover .btn-seta-ico svg:nth-child(2) {
+  transform: translateX(0);
+}
+
+/**
+ * Chamada para o roteiro.
+ *
+ * Verde limao solido, fora da paleta do clima: este botao e o motivo do app
+ * existir - a previsao e a porta de entrada, o roteiro e o produto. Como cor
+ * fixa, ele se destaca igual sobre qualquer foto de fundo, no card, no celular
+ * e na imagem baixada, e o olho aprende a procurar por ele.
+ */
+.btn-seta-limao {
+  background: #a3e635;
+  border-color: rgba(19, 32, 3, 0.28);
+  color: #132003;
+}
+.btn-seta-limao:hover {
+  background: #bef264;
+  border-color: rgba(19, 32, 3, 0.4);
+}
+.btn-seta-limao .btn-seta-ico {
+  background: rgba(19, 32, 3, 0.14);
+  color: #132003;
+}
+
+.btn-acao {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.08);
+  padding: 6px 11px;
+  font-size: 11.5px;
+  white-space: nowrap;
+  font-weight: 500;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  transition:
+    background 0.35s ease,
+    border-color 0.35s ease,
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+/* Os icones absorvem a cor dominante do clima em vez de branco puro: integram
+   ao tema e param de parecer avulsos sobre a foto. O texto do botao segue
+   branco, que e o que precisa de contraste para ler. */
+.btn-acao svg,
+.btn-acao .girando {
+  color: var(--destaque, #ffffff);
+}
+
+.btn-acao:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.32);
+  transform: translateY(-1px);
+}
+.btn-acao:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.btn-acao-perigo {
+  padding: 7px 10px;
+}
+.btn-acao-perigo:hover:not(:disabled) {
+  background: rgba(248, 113, 113, 0.3);
+  border-color: rgba(248, 113, 113, 0.5);
+}
+
+.girando {
+  animation: girar 1s linear infinite;
+}
+
+/* acordeao do texto da analise.
+   grid-template-rows 0fr -> 1fr anima ate a altura real do conteudo, sem
+   precisar chutar um max-height que corta texto longo */
+.acc-corpo {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.acc.open .acc-corpo {
+  grid-template-rows: 1fr;
+}
+/* Vale para qualquer elemento, nao so div: e este recorte que faz o acordeao
+   funcionar, e um seletor amarrado a uma tag quebra silenciosamente quando o
+   HTML muda - o texto simplesmente nasce aberto. */
+.acc-corpo > * {
+  overflow: hidden;
+}
+.acc .mais {
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.acc.open .mais {
+  transform: rotate(45deg);
+}
+
+/* =====================================================================
+   Keyframes
+   ===================================================================== */
+
+@keyframes nevar {
+  to {
+    transform: translateY(210px);
+  }
+}
+@keyframes relampago {
+  0%,
+  90%,
+  100% {
+    opacity: 0;
+  }
+  91% {
+    opacity: 0.55;
+  }
+  92% {
+    opacity: 0;
+  }
+  93.5% {
+    opacity: 0.35;
+  }
+  95% {
+    opacity: 0;
+  }
+}
+@keyframes respirar {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.94;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+}
+@keyframes deriva {
+  to {
+    transform: translateX(26px);
+  }
+}
+@keyframes cintilar {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@keyframes pulsar-onda {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(0.78);
+  }
+}
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes surgir {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.surgir {
+  animation: surgir 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* =====================================================================
+   Wizard de experiencias
+   ===================================================================== */
+
+/* cada etapa entra deslizando; a key={passo} no React remonta o no e
+   redispara a animacao a cada troca */
+.passo {
+  animation: passo-entra 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes passo-entra {
+  from {
+    opacity: 0;
+    transform: translateX(26px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.cartao-opcao {
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.3s ease,
+    background 0.3s ease;
+}
+.cartao-opcao:hover {
+  transform: translateY(-3px);
+}
+.cartao-opcao:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.btn-proximo {
+  box-shadow: 0 12px 30px -14px rgba(56, 189, 248, 0.9);
+}
+.btn-proximo:disabled {
+  box-shadow: none;
+}
+
+/* =====================================================================
+   Painel de dados
+   ===================================================================== */
+
+/**
+ * Paleta categorica do dashboard.
+ *
+ * Validada contra a superficie escura do app (#0f1523): faixa de luminosidade,
+ * piso de croma, separacao para daltonismo (protan/deutan/tritan) e contraste
+ * minimo de 3:1. As cores identificam SERIE, nunca grandeza - grandeza usa uma
+ * cor so em intensidades diferentes.
+ *
+ * A ordem e fixa: cada posicao pertence sempre a mesma categoria. Reordenar
+ * conforme o ranking faria a mesma coisa mudar de cor entre graficos.
+ */
+/**
+ * Painel: tema claro, no papel bege do Chartist.
+ *
+ * O app e escuro, o painel e claro - publicos diferentes. Quem le o painel e a
+ * secretaria de turismo, num relatorio; quem usa o app e o turista, no celular.
+ *
+ * As cores das series sao as PROPRIAS do Chartist (#d70206, #0544d3, #59922b),
+ * so reordenadas: na ordem original o vermelho e o coral vinham colados, com
+ * DeltaE 11.9 para visao normal - abaixo do piso de 15. O roxo e o laranja
+ * foram um passo escurecidos para caber na faixa de luminosidade do fundo
+ * claro. Nesta ordem os seis checks passam com folga.
+ */
+.tema-claro {
+  /* Cores originais do Chartist, na ordem dele. Todo grafico do painel traz
+     rotulo e valor ao lado da cor, entao a identidade nunca depende so do
+     matiz - e o que permite usar quatro tons quentes vizinhos. */
+  --serie-1: #d70206; /* vermelho */
+  --serie-2: #f05b4f; /* coral    */
+  --serie-3: #f4c63d; /* amarelo  */
+  --serie-4: #d17905; /* laranja  */
+  --serie-5: #453d3f; /* grafite  */
+
+  --fundo-painel: #f7f2e8;
+  --tinta-forte: #2f2a24;
+  --tinta: #5c5347;
+  --tinta-fraca: #8d8375;
+  --linha: rgba(69, 61, 63, 0.16);
+
+  min-height: 100vh;
+  color: var(--tinta-forte);
+  background:
+    radial-gradient(1200px 600px at 15% -10%, #f3ece0 0%, transparent 60%),
+    #ece5d8;
+}
+
+.tema-claro .painel {
+  background: var(--fundo-painel);
+  border: 1px solid var(--linha);
+  box-shadow: 0 10px 26px -22px rgba(69, 61, 63, 0.5);
+}
+
+/* Trilhos e divisorias no papel: tinta diluida, nunca cinza puro - cinza
+   sobre bege parece sujeira, nao estrutura. */
+.tema-claro .trilho {
+  background: rgba(69, 61, 63, 0.1);
+}
+.tema-claro .borda {
+  border-color: var(--linha);
+}
+.tema-claro input {
+  background: rgba(255, 255, 255, 0.6);
+  border-color: var(--linha);
+  color: var(--tinta-forte);
+}
+.tema-claro input::placeholder {
+  color: var(--tinta-fraca);
+}
+
+/* lista de sugestoes de cidade */
+.lista-cidades {
+  animation: surgir-lista 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
+  max-height: 288px;
+  overflow-y: auto;
+}
+@keyframes surgir-lista {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.pulso {
+  animation: pulso 1.8s ease-in-out infinite;
+}
+@keyframes pulso {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.09);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* botao de favorito: coracao que enche ao salvar */
+.btn-favorito {
+  color: var(--serie-5);
+  cursor: pointer;
+  transition:
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.3s ease;
+  opacity: 0.55;
+}
+.btn-favorito:hover {
+  opacity: 1;
+  transform: scale(1.15);
+}
+.btn-favorito[aria-pressed="true"] {
+  opacity: 1;
+}
+.btn-favorito:active {
+  transform: scale(0.9);
+}
+
+/* Faixa das proximas horas.
+   Encaixe por coluna e barra de rolagem escondida: no celular a faixa e
+   arrastada com o dedo, e uma barra cinza atravessando o vidro do card
+   estragaria o acabamento. O conteudo continua alcancavel por teclado. */
+.faixa-horas {
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.faixa-horas::-webkit-scrollbar {
+  display: none;
+}
+
+/* ---------------------------------------------------------------------------
+   Carrossel de faixas dos outros apps da casa.
+   Copiado de `apps/manifesto/faixas/carrossel.html` - a decisao de copiar em
+   vez de compartilhar esta em `apps/manifesto/faixa-cruzada.md`. O componente
+   que usa estas classes e `src/components/FaixaCarrossel.tsx`.
+   ------------------------------------------------------------------------- */
+/* Altura fixa desde o primeiro pixel: o rodape nao pode pular quando o JS
+   entra. As faixas ficam empilhadas no mesmo espaco. */
+.faixa-carrossel{
+  position:relative; width:100%; min-height:56px; overflow:hidden;
+  font-family:inherit; font-size:15px;
+  border-top:1px solid rgba(0,0,0,.08);
+}
+.faixa-carrossel[data-tema="claro"]{ background:#F5F6F8; color:#14171C; }
+.faixa-carrossel[data-tema="escuro"]{
+  background:#14171C; color:#E8EAED; border-top-color:rgba(255,255,255,.10);
+}
+
+.faixa{
+  position:absolute; inset:0;
+  display:flex; align-items:center; gap:12px;
+  box-sizing:border-box; padding:0 16px;
+  color:inherit; text-decoration:none;
+}
+
+/* ANTES do JS: so a primeira, parada. Se o script nunca rodar, o rodape mostra
+   uma faixa valida em vez de cinco empilhadas — por isso o bloco do proprio
+   site precisa sair do HTML na instalacao. */
+.faixa-carrossel:not(.pronto) .faixa:not(:first-child){ display:none; }
+
+/* DEPOIS do JS: quem manda e a classe .is-ativa. */
+.faixa-carrossel.pronto .faixa{
+  opacity:0; transform:translateY(100%); pointer-events:none;
+  transition:opacity .45s ease, transform .45s ease;
+}
+.faixa-carrossel.pronto .faixa.is-ativa{
+  opacity:1; transform:none; pointer-events:auto;
+}
+
+.faixa-texto{ display:contents; }
+.faixa-icone{ flex:none; font-size:20px; line-height:1; }
+.faixa-nome{ flex:none; font-weight:700; letter-spacing:-.01em; }
+.faixa-frase{
+  flex:1 1 auto; min-width:0; font-size:14px; opacity:.7;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+
+/* Pilula NEUTRA: a propria tinta, invertida. Assim ela nunca colide com a cor
+   de conversao do site anfitriao. */
+.faixa-pilula{
+  flex:none; display:inline-flex; align-items:center; gap:6px;
+  padding:8px 14px; border-radius:999px;
+  font-size:13px; font-weight:600; white-space:nowrap;
+}
+.faixa-carrossel[data-tema="claro"] .faixa-pilula{ background:#14171C; color:#FFF; }
+.faixa-carrossel[data-tema="escuro"] .faixa-pilula{ background:#E8EAED; color:#14171C; }
+
+.faixa:hover{ filter:brightness(.97); }
+.faixa-carrossel[data-tema="escuro"] .faixa:hover{ filter:brightness(1.25); }
+.faixa:focus-visible{ outline:2px solid currentColor; outline-offset:-3px; }
+
+/* Site com bolha de chat flutuante no canto inferior direito (Dify e afins):
+   a pilula tem de sair de baixo dela, senao o clique da faixa nao existe. */
+.faixa-carrossel[data-chat="direita"] .faixa{ padding-right:88px; }
+
+/* CELULAR — o layout de uma linha so nao cabe aqui: com o icone e o botao
+   disputando espaco, sobrava tudo menos o motivo de clicar. Entao tres linhas,
+   sem icone: nome, frase e o botao esticado, facil de acertar com o polegar.
+   A frase quebra em ate duas linhas; o teto existe porque a faixa e absoluta
+   dentro do carrossel e nao empurra a altura dele. */
+@media (max-width:640px){
+  .faixa-carrossel{ min-height:136px; }
+  .faixa{ flex-direction:column; align-items:flex-start; justify-content:center;
+       gap:6px; padding:14px 16px; }
+  .faixa-icone{ display:none; }
+  .faixa-texto{ display:flex; flex-direction:column; align-items:flex-start;
+             gap:3px; width:100%; min-width:0; }
+  .faixa-nome{ flex:none; font-size:15px; }
+  .faixa-frase{ font-size:13px; line-height:1.35; width:100%; min-width:0;
+             white-space:normal; text-overflow:clip;
+             display:-webkit-box; -webkit-box-orient:vertical;
+             -webkit-line-clamp:2; overflow:hidden; }
+  .faixa-carrossel[data-tema] .faixa-pilula{ align-self:stretch; justify-content:center; margin-top:2px; }
+  .faixa-carrossel[data-chat="direita"] .faixa-pilula{ margin-right:56px; }
+}
+@media (min-width:641px){
+  .faixa-carrossel{ min-height:64px; }
+  .faixa{ padding:0 72px; gap:14px; }
+  .faixa-carrossel[data-chat="direita"] .faixa{ padding-right:96px; }
+}
+
+/* Quem pediu menos movimento recebe UMA faixa parada — o JS nem liga o timer.
+   Zerar so a transicao deixaria o conteudo trocando na cara da pessoa, que e
+   exatamente o que ela desligou. */
+@media (prefers-reduced-motion:reduce){
+  .faixa-carrossel.pronto .faixa{ transition:none; }
+}

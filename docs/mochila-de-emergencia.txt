@@ -1,0 +1,40 @@
+MOCHILA DE EMERGÊNCIA — resumo do projeto irmão
+https://mochila-seckler.vercel.app
+Lido da própria página em 22/08/2026.
+
+O QUE É
+App para quem monta kit de emergência. O usuário cadastra os itens da mochila
+e o sistema cuida da parte que as pessoas esquecem: a VALIDADE. O problema que
+ele resolve não é montar a mochila, é ela continuar servindo com o tempo — kit
+guardado por dois anos costuma estar cheio de item vencido na hora que precisa.
+
+O QUE FAZ
+- Catálogo: cadastro ilimitado de kits e itens, com nome, categoria e validade.
+- Alertas por e-mail: 30, 15 e 1 dia antes do vencimento, e no dia.
+- Alertas no Telegram: bot próprio, vinculado por Chat ID no perfil do usuário
+  (o usuário manda /start no bot, copia o ID e cola no painel).
+- Análise por IA (destaque novo): avalia cada item pela FUNÇÃO, não só pelo
+  nome, e devolve
+    * nota de prontidão de 0 a 100 (equilíbrio, redundância, validade),
+    * estimativa de autonomia — quantos dias o kit sustenta uma pessoa,
+    * recomendações por categoria, sem indicar marca ou produto.
+  Roda só quando o usuário pede, nunca sozinha.
+
+MODELO DE NEGÓCIO
+- R$ 17,00 por 12 meses, pagamento único, sem renovação automática.
+- Tudo incluso: sem plano básico, sem recurso bloqueado, sem anúncio.
+- 3 análises de IA inclusas no período.
+- Pagamento pela Stripe; o app não guarda dado de cartão.
+- Doação opcional por PIX para custear servidor e desenvolvimento.
+- Ao vencer o acesso, os dados continuam salvos; param só os alertas e a
+  análise. Renovação antecipada soma dias em vez de zerar.
+
+POR QUE É PAGO (o argumento que a própria página usa)
+Custa e-mail, bot rodando todos os dias, servidor e processamento de IA.
+Preferem cobrar pouco e uma vez por ano a viver de anúncio ou venda de dados.
+
+LIGAÇÃO COM O TRAVELIA
+Mesmo dono (Seckler Digital) e públicos que se encostam: quem consulta o tempo
+antes de viajar é candidato a manter kit de emergência. A divulgação vive na
+faixa branca do rodapé do TravelIA. O gancho honesto entre os dois é o
+CONTROLE DE VALIDADE — e não "o que levar", que o app não faz.
