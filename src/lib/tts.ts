@@ -17,6 +17,51 @@ async function mensagemDeErro(resposta: Response): Promise<string> {
 }
 
 /**
+ * Narra na ElevenLabs. Cobra 1 credito por caractere (~260 por previsao), e o
+ * plano acaba rapido: quem chama cai para a OpenAI quando isto lanca.
+ */
+async function audioElevenLabs(texto: string, chave: string): Promise<Uint8Array> {
+  const voz = process.env.voice_id;
+  if (!voz) throw new Error("voice_id nao configurado");
+  const modelo = process.env.modelId || "eleven_v4";
+
+  const resposta = await fetch(
+    `https://api.elevenlabs.io/v1/text-to-speech/${voz}?output_format=mp3_44100_128`,
+    {
+      method: "POST",
+      headers: { "xi-api-key": chave, "Content-Type": "application/json" },
+      body: JSON.stringify({ text: texto, model_id: modelo, language_code: "pt" }),
+    },
+  );
+
+  if (!resposta.ok) {
+    const cru = await resposta.text().catch(() => "");
+    throw new Error(`ElevenLabs respondeu ${resposta.status}: ${cru.slice(0, 200)}`);
+  }
+  return new Uint8Array(await resposta.arrayBuffer());
+}
+
+/**
+ * Gera o mp3 da analise: ElevenLabs quando `ELEVENLABS_API_KEY` existe, OpenAI
+ * como reserva (credito acabou, modelo errado, fora do ar).
+ */
+export async function gerarAudio(
+  texto: string,
+  local: string,
+  guia: GuiaRegional = GUIA_PADRAO,
+): Promise<Uint8Array> {
+  const chaveEleven = process.env.ELEVENLABS_API_KEY;
+  if (chaveEleven) {
+    try {
+      return await audioElevenLabs(texto, chaveEleven);
+    } catch (e) {
+      console.error("[tts] ElevenLabs falhou, narrando na OpenAI:", e);
+    }
+  }
+  return audioOpenAI(texto, local, guia);
+}
+
+/**
  * Gera o mp3 da analise na OpenAI.
  *
  * O `gpt-4o-mini-tts` aceita `instructions`, um comando de direcao de voz. E por
@@ -24,10 +69,10 @@ async function mensagemDeErro(resposta: Response): Promise<string> {
  * lugar, aqui a narracao acompanha o jeito de falar, com os tracos foneticos
  * que vieram do guia regional.
  */
-export async function gerarAudio(
+async function audioOpenAI(
   texto: string,
   local: string,
-  guia: GuiaRegional = GUIA_PADRAO,
+  guia: GuiaRegional,
 ): Promise<Uint8Array> {
   const chave = process.env.OPENAI_API_KEY;
   if (!chave) throw new Error("OPENAI_API_KEY nao configurada no .env.local");

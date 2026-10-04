@@ -176,8 +176,11 @@ export async function POST(req: Request) {
      * Ligado por `OPENAI_AUDIO_MODEL` - variavel vazia mantem o pipeline de
      * dois passos. Falhou aqui, o codigo abaixo assume: a previsao nunca fica
      * sem texto por causa de um experimento de voz.
+     *
+     * Com a ElevenLabs configurada este caminho fica de fora: ela narra o
+     * texto do pipeline de dois passos (e cai na OpenAI TTS sem credito).
      */
-    if (process.env.OPENAI_AUDIO_MODEL?.trim()) {
+    if (process.env.OPENAI_AUDIO_MODEL?.trim() && !process.env.ELEVENLABS_API_KEY) {
       try {
         const falada = await gerarAnaliseFalada(dados, local, guia, comparativo, previsao);
         analise = falada.texto;
@@ -204,7 +207,7 @@ export async function POST(req: Request) {
       }
     }
 
-    // 5. Audio da analise (OpenAI TTS)
+    // 5. Audio da analise (ElevenLabs, com a OpenAI TTS de reserva)
     if (analise && !mp3) {
       try {
         mp3 = await gerarAudio(analise, local, guia);
