@@ -210,7 +210,7 @@ export async function POST(req: Request) {
     // 5. Audio da analise (ElevenLabs, com a OpenAI TTS de reserva)
     if (analise && !mp3) {
       try {
-        mp3 = await gerarAudio(analise, local, guia);
+        mp3 = await gerarAudio(analise, local, guia, localidade.estado);
       } catch (e) {
         avisos.push(`Audio nao gerado: ${e instanceof Error ? e.message : e}`);
       }

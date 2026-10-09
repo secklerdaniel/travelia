@@ -1,5 +1,7 @@
 import { promptPreenchido } from "./prompts";
 import { GUIA_PADRAO, type GuiaRegional } from "./regionalidade";
+import { normalizeForCompare } from "./search/normalizeCitySearch";
+import { nomeDoEstado } from "./search/ufs";
 
 const ENDPOINT = "https://api.openai.com/v1/audio/speech";
 
@@ -20,9 +22,12 @@ async function mensagemDeErro(resposta: Response): Promise<string> {
  * Narra na ElevenLabs. Cobra 1 credito por caractere (~260 por previsao), e o
  * plano acaba rapido: quem chama cai para a OpenAI quando isto lanca.
  */
-async function audioElevenLabs(texto: string, chave: string): Promise<Uint8Array> {
-  const voz = process.env.voice_id;
-  if (!voz) throw new Error("voice_id nao configurado");
+async function audioElevenLabs(
+  texto: string,
+  chave: string,
+  estado: string | null,
+): Promise<Uint8Array> {
+  const voz = ehSudeste(estado) ? VOZ_SUDESTE : VOZ_PADRAO;
   const modelo = process.env.modelId || "eleven_v4";
 
   const resposta = await fetch(
@@ -41,19 +46,44 @@ async function audioElevenLabs(texto: string, chave: string): Promise<Uint8Array
   return new Uint8Array(await resposta.arrayBuffer());
 }
 
+// IDs de voz da ElevenLabs ficam no codigo: nao sao segredo, e trocar voz e
+// editar esta linha, sem passar por .env nem Vercel.
+const VOZ_PADRAO = "KHmfNHtEjHhLK9eER20w"; // Fernanda (pt-BR, biblioteca)
+const VOZ_SUDESTE = "La9Y2IhxjQLFN1750Mwe"; // Daniel Seckler (clonada)
+const SUDESTE = ["SP", "RJ", "MG", "ES"];
+
+/**
+ * O geocoding devolve o estado como sigla ("SP") ou como nome ("São Paulo"),
+ * conforme a fonte que respondeu - os dois precisam contar.
+ *
+ * Por UF e nao pelo guia regional: o guia so existe para cidades cadastradas,
+ * e a voz do Sudeste vale para qualquer cidade dos quatro estados.
+ */
+function ehSudeste(estado: string | null): boolean {
+  if (!estado) return false;
+  const alvo = normalizeForCompare(estado);
+  return SUDESTE.some(
+    (uf) => alvo === normalizeForCompare(uf) || alvo === normalizeForCompare(nomeDoEstado(uf) ?? ""),
+  );
+}
+
 /**
  * Gera o mp3 da analise: ElevenLabs quando `ELEVENLABS_API_KEY` existe, OpenAI
  * como reserva (credito acabou, modelo errado, fora do ar).
+ *
+ * Voz: a do Daniel (VOZ_SUDESTE) para SP, RJ, MG e ES; Fernanda (VOZ_PADRAO)
+ * no resto.
  */
 export async function gerarAudio(
   texto: string,
   local: string,
   guia: GuiaRegional = GUIA_PADRAO,
+  estado: string | null = null,
 ): Promise<Uint8Array> {
   const chaveEleven = process.env.ELEVENLABS_API_KEY;
   if (chaveEleven) {
     try {
-      return await audioElevenLabs(texto, chaveEleven);
+      return await audioElevenLabs(texto, chaveEleven, estado);
     } catch (e) {
       console.error("[tts] ElevenLabs falhou, narrando na OpenAI:", e);
     }
