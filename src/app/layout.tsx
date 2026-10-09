@@ -22,9 +22,24 @@ const mono = JetBrains_Mono({
   weight: ["400", "500"],
 });
 
+const DESCRICAO =
+  "A previsão do tempo com o sotaque da cidade, narrada por IA — e o que fazer lá.";
+
+// Sem openGraph o WhatsApp mostrava so o endereco no preview. A imagem vem de
+// app/opengraph-image.jpg (feita no remotion-app, Still "TravelIAOg").
 export const metadata: Metadata = {
+  metadataBase: new URL("https://clima-seckler.vercel.app"),
   title: "TravelIA — Clima Web",
-  description: "Previsao do tempo com analise e narracao geradas por IA.",
+  description: DESCRICAO,
+  openGraph: {
+    title: "TravelIA — a previsão do tempo com sotaque",
+    description: DESCRICAO,
+    url: "/",
+    siteName: "TravelIA",
+    locale: "pt_BR",
+    type: "website",
+  },
+  twitter: { card: "summary_large_image" },
 };
 
 export default function RootLayout({
