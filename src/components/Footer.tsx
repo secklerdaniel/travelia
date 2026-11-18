@@ -1,7 +1,7 @@
 import AnuncioVieira from "./AnuncioVieira";
 import FaixaCarrossel from "./FaixaCarrossel";
 
-const PORTFOLIO = "https://portfolio-daniel-seckler.vercel.app/";
+const PORTFOLIO = "https://seckler-digital.vercel.app/";
 /**
  * Assinatura, nas duas superficies do projeto.
  *

@@ -405,7 +405,7 @@ export default function LandingTravelIA() {
         Travel<span className="font-serif">I</span>A — Inteligência de
         Demanda Turística - 2026 | Desenvolvido por{" "}
         <a
-          href="https://portfolio-daniel-seckler.vercel.app/"
+          href="https://seckler-digital.vercel.app/"
           target="_blank"
           rel="noopener noreferrer"
           className="text-white/60 underline-offset-2 transition hover:text-sky-400 hover:underline"
